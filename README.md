@@ -3,6 +3,8 @@
 I have many devices that are still unrooted, or the bootloader can't be unlocked
 As a result I blocked all ads on the router instead, this way every PC or phones/tablets won't slow down
 
+## Script updated with the whitelist. Thanks to this, after collecting all the addresses, I can remove the ones I need from the blacklist
+
 ## How to use
 
 Make sure dnsmasq is reading /tmp/hosts file or else the ads won't go away.
@@ -24,6 +26,7 @@ logger "download MalwareDomainList hosts file..." && wget -qO- "https://www.malw
 logger "download hpHosts hosts file..." && wget -qO- "http://hosts-file.net/ad_servers.txt" |awk -v r="0.0.0.0" '{sub(/^127.0.0.1/, r)} $0 ~ "^"r' >> /tmp/temp-hosts
 logger "download Ad server hosts file..." && wget -qO- "http://pgl.yoyo.org/adservers/serverlist.php?hostformat=dnsmasq&showintro=0&mimetype=plaintext" |awk -v r="0.0.0.0" '{sub(/^127.0.0.1/, r)} $0 ~ "^"r' >> /tmp/temp-hosts
 logger "download Kizoky hosts file..." && wget -qO- "https://raw.githubusercontent.com/Kizoky/RouterHosts/master/hosts1.txt" |awk -v r="0.0.0.0" '{sub(/^127.0.0.1/, r)} $0 ~ "^"r' >> /tmp/temp-hosts
+logger "Removing domains form whitelist in /tmp/hosts file..." && sed -i "/\b\(mailtrack.io\|mailtrack.me\)\b/d" /tmp/temp-hosts
 logger "Updating /tmp/hosts file..." && cat /tmp/temp-hosts | sort -uk2 >> /tmp/hosts
 rm /tmp/temp-hosts && logger "/tmp/hosts file has been successfully updated."
 killall -SIGHUP dnsmasq
